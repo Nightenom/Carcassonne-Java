@@ -1,0 +1,104 @@
+buildscript {
+    repositories {
+        maven {
+        url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        // https://github.com/rgoldberg/gradle-java-modules/tree/renamed-plugin
+        classpath "gradle.plugin.rgoldberg:experimental-jigsaw:0.5-SNAPSHOT"
+    }
+}
+
+allprojects {subProject ->
+    tasks.register("hello") {
+        group = 'Welcome'
+        description = 'Produces a greeting'
+
+        doLast {
+            println 'Hello from ' + subProject.name
+        }
+    }
+}
+
+evaluationDependsOnChildren() 
+subprojects { subProject ->
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'eclipse'
+    apply plugin: 'rgoldberg.experimental-jigsaw'
+
+    group = 'cz.rict.carcassonne.classic'
+    
+    sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '11'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    
+    dependencies {
+        testImplementation 'junit:junit:4.12'
+    }
+
+    afterEvaluate {
+        compileJava {
+            inputs.property("moduleName", subProject.moduleName)
+            doFirst {
+                options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+                ]
+                classpath = files()
+            }
+        }
+
+        compileTestJava {
+            inputs.property("moduleName", subProject.moduleName)
+            doFirst {
+                options.compilerArgs = [
+                    '--module-path', classpath.asPath,
+                    '--add-modules', 'junit',
+                    '--add-reads', "$moduleName=junit",
+                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+                ]
+                classpath = files()
+            }
+        }
+
+        test {
+            inputs.property("moduleName", subProject.moduleName)
+            doFirst {
+                jvmArgs = [
+                    '--module-path', classpath.asPath,
+                    '--add-modules', 'ALL-MODULE-PATH',
+                    '--add-reads', "$moduleName=junit",
+                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+                ]
+                classpath = files()
+            }
+        }
+
+        jar {
+            inputs.property("moduleName", subProject.moduleName)
+            manifest {
+                attributes('Automatic-Module-Name': subProject.moduleName)
+            }
+        }
+    }
+
+    if (subProject.name != 'base') {
+        dependencies {
+            implementation project(':base')
+        }
+
+        tasks.withType(Jar) {
+            destinationDir = file("$rootDir/run/mods/")
+        }
+    }
+    else
+    {
+        tasks.withType(Jar) {
+            destinationDir = file("$rootDir/run/")
+        }
+    }
+}

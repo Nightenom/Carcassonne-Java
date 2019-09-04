@@ -1,0 +1,9 @@
+include ':base'
+include ':bridge_castles_bazaars'
+include ':inns_cathedrals'
+include ':princess_dragon'
+include ':river'
+include ':tower'
+include ':traders_builders'
+
+rootProject.name = 'Carcassonne-Java'

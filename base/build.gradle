@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+ext.moduleName = 'cz.rict.carcassonne.classic.base'
+
+version = 1.0
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'cz.rict.carcassonne.classic.base.launcher.Main'
+    )
+  }
+}
