@@ -10,18 +10,6 @@ buildscript {
     }
 }
 
-allprojects {subProject ->
-    tasks.register("hello") {
-        group = 'Welcome'
-        description = 'Produces a greeting'
-
-        doLast {
-            println 'Hello from ' + subProject.name
-        }
-    }
-}
-
-evaluationDependsOnChildren() 
 subprojects { subProject ->
     apply plugin: 'java'
     apply plugin: 'idea'
@@ -39,51 +27,6 @@ subprojects { subProject ->
     
     dependencies {
         testImplementation 'junit:junit:4.12'
-    }
-
-    afterEvaluate {
-        compileJava {
-            inputs.property("moduleName", subProject.moduleName)
-            doFirst {
-                options.compilerArgs = [
-                    '--module-path', classpath.asPath,
-                ]
-                classpath = files()
-            }
-        }
-
-        compileTestJava {
-            inputs.property("moduleName", subProject.moduleName)
-            doFirst {
-                options.compilerArgs = [
-                    '--module-path', classpath.asPath,
-                    '--add-modules', 'junit',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
-                ]
-                classpath = files()
-            }
-        }
-
-        test {
-            inputs.property("moduleName", subProject.moduleName)
-            doFirst {
-                jvmArgs = [
-                    '--module-path', classpath.asPath,
-                    '--add-modules', 'ALL-MODULE-PATH',
-                    '--add-reads', "$moduleName=junit",
-                    '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
-                ]
-                classpath = files()
-            }
-        }
-
-        jar {
-            inputs.property("moduleName", subProject.moduleName)
-            manifest {
-                attributes('Automatic-Module-Name': subProject.moduleName)
-            }
-        }
     }
 
     if (subProject.name != 'base') {

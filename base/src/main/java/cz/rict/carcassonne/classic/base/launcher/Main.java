@@ -36,7 +36,7 @@ public class Main
         }
         else
         {
-            // Logger info no mods directory found
+            System.out.println("No mods found at: " + modsDir.toAbsolutePath().toString());
         }
     }
 
@@ -44,16 +44,15 @@ public class Main
     {
         // To logger
         System.out.println("Found possible mod at: " + modRef.location().map(uri -> uri.toString()).orElse("Unknown location"));
-        System.out.println(modRef.descriptor().toString());
 
         // discover module-info.java, find exposed packages
         final List<String> accessiblePackages = new ArrayList<>();
         modRef.descriptor().exports().forEach(ex -> {
-            if (!ex.targets().isEmpty() && ex.targets().contains(BASE_MODULE_NAME))
+            if (!ex.targets().isEmpty() && !ex.targets().contains(BASE_MODULE_NAME))
             {
                 return; // unaccessible package
             }
-            accessiblePackages.add(ex.toString().split(" ")[0].replace('.', '/'));
+            accessiblePackages.add(ex.source().replace('.', '/'));
         });
 
         if (accessiblePackages.isEmpty())

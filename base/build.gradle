@@ -1,13 +1,20 @@
+apply plugin: 'application'
 apply plugin: 'java'
 
 ext.moduleName = 'cz.rict.carcassonne.classic.base'
 
 version = 1.0
 
+application {
+    mainClassName = 'cz.rict.carcassonne.classic.base/cz.rict.carcassonne.classic.base.launcher.Main'
+}
+
+tasks.run.workingDir = file("$projectDir/../run")
+
 jar {
-  manifest {
-    attributes(
-      'Main-Class': 'cz.rict.carcassonne.classic.base.launcher.Main'
-    )
-  }
+    manifest {
+        attributes(
+            'Main-Class': 'cz.rict.carcassonne.classic.base.launcher.Main'
+        )
+    }
 }
