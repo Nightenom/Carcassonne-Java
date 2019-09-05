@@ -95,7 +95,6 @@
         <module name="JavadocVariable"/>
         <module name="JavadocStyle">
             <property name="severity" value="info"/>
-            <property name="checkFirstSentence" value="true"/>
             <property name="scope" value="private"/>
             <property name="excludeScope" value="nothing"/>
             <property name="tokens" value="METHOD_DEF"/>
