@@ -26,8 +26,11 @@ public class Launcher
      */
     public static void main(final String[] args) throws URISyntaxException, IOException
     {
-        final String runDir = Paths.get(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath().normalize().toString();
-        final String javaPath = System.getProperty("java.home") + "/bin/java";
-        new ProcessBuilder(javaPath, "--module-path", runDir, "--module", MODULE_MAIN_CLASS).inheritIO().start();
+        new ProcessBuilder(
+            System.getProperty("java.home") + "/bin/java",
+            "--module-path",
+            Paths.get(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath().normalize().toString(),
+            "--module",
+            MODULE_MAIN_CLASS).inheritIO().start();
     }
 }

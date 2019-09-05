@@ -11,7 +11,7 @@ application {
     mainClassName = moduleName + "/" + moduleMainClass
 }
 
-tasks.run.workingDir = file("$projectDir/../run")
+tasks.run.workingDir = file("$rootDir/run")
 
 jar {
     manifest {

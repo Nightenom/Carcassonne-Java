@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.lang.module.Configuration;
 import java.lang.module.ModuleFinder;
 import java.lang.module.ModuleReference;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import cz.rict.carcassonne.classic.base.event.TestEvent;
 import cz.rict.carcassonne.classic.base.mod.Mod;
 
 public class Main
@@ -38,6 +40,8 @@ public class Main
         {
             System.out.println("No mods found at: " + modsDir.toAbsolutePath().toString());
         }
+
+        TestEvent.post(": Test event");
     }
 
     private static void loadMod(final Module mod, final ModuleReference modRef)
@@ -94,8 +98,27 @@ public class Main
             if (modId != null)
             {
                 System.out.println("Found mod: " + modId.value());
-                // Hook event register here
-                // or f it and let mods register events in constructor thus needs static list to prevent GC of mod instances
+                // Hook event register here or f it and let mods register events in constructor
+                // might need static list to prevent GC of mod instances, but not needed
+                try
+                {
+                    modClazz.getConstructor().newInstance();
+                }
+                catch (final NoSuchMethodException | IllegalArgumentException e)
+                {
+                    System.out.println("Missing public non argument constructor");
+                    e.printStackTrace();
+                }
+                catch (final SecurityException | IllegalAccessException e)
+                {
+                    System.out.println("Can't access mod constructor");
+                    e.printStackTrace();
+                }
+                catch (final InstantiationException | InvocationTargetException e)
+                {
+                    System.out.println("Can't instantiate mod instance");
+                    e.printStackTrace();
+                }
             }
         });
     }
