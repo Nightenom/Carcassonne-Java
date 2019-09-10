@@ -52,7 +52,7 @@
 
     <!-- Checks that a package-info.java file exists for each package.     -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html#JavadocPackage -->
-    <module name="JavadocPackage"/>
+    <!-- <module name="JavadocPackage"/> -->
 
     <!-- Checks whether files end with a new line.                        -->
     <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
@@ -92,7 +92,6 @@
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
         <module name="JavadocMethod"/>
         <module name="JavadocType"/>
-        <module name="JavadocVariable"/>
         <module name="JavadocStyle">
             <property name="severity" value="info"/>
             <property name="scope" value="private"/>
@@ -100,6 +99,7 @@
             <property name="tokens" value="METHOD_DEF"/>
             <property name="checkEmptyJavadoc" value="false"/>
             <property name="checkHtml" value="true"/>
+            <property name="checkFirstSentence" value="false"/>
         </module>
 
 
@@ -227,5 +227,4 @@
             <property name="severity" value="info"/>
         </module>
     </module>
-
 </module>

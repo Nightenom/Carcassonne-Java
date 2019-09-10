@@ -7,6 +7,7 @@ import java.lang.module.ModuleReference;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class Main
     private static void loadMod(final Module mod, final ModuleReference modRef)
     {
         // To logger
-        System.out.println("Found possible mod at: " + modRef.location().map(uri -> uri.toString()).orElse("Unknown location"));
+        System.out.println("Found possible mod at: " + modRef.location().map(uri -> Paths.get(uri.normalize()).toString()).orElse("Unknown location"));
 
         // discover module-info.java, find exposed packages
         final List<String> accessiblePackages = new ArrayList<>();

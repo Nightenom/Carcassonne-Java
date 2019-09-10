@@ -1,20 +1,22 @@
 buildscript {
     repositories {
         maven {
-        url "https://plugins.gradle.org/m2/"
+            url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
-        // https://github.com/rgoldberg/gradle-java-modules/tree/renamed-plugin
-        classpath "gradle.plugin.rgoldberg:experimental-jigsaw:0.5-SNAPSHOT"
+        // https://github.com/java9-modularity/gradle-modules-plugin
+        classpath "org.javamodularity:moduleplugin:1.6.0"
     }
 }
+
+import org.apache.tools.ant.taskdefs.condition.Os
 
 subprojects { subProject ->
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'eclipse'
-    apply plugin: 'rgoldberg.experimental-jigsaw'
+    apply plugin: 'org.javamodularity.moduleplugin'
 
     group = 'cz.rict.carcassonne.classic'
     
@@ -40,6 +42,32 @@ subprojects { subProject ->
     }
     else
     {
+        subProject.ext.lwjglVersion = "3.2.1"
+        subProject.ext.lwjglNatives = Os.isFamily(Os.FAMILY_WINDOWS) ? "natives-windows" : (Os.isFamily(Os.FAMILY_MAC) ? "natives-macos" : "natives-linux")
+
+        dependencies {
+            implementation "org.lwjgl:lwjgl:$lwjglVersion"
+            implementation "org.lwjgl:lwjgl-assimp:$lwjglVersion"
+            implementation "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+            implementation "org.lwjgl:lwjgl-openal:$lwjglVersion"
+            implementation "org.lwjgl:lwjgl-opengl:$lwjglVersion"
+            implementation "org.lwjgl:lwjgl-stb:$lwjglVersion"
+            runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+            runtimeOnly "org.lwjgl:lwjgl-assimp:$lwjglVersion:$lwjglNatives"
+            runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
+            runtimeOnly "org.lwjgl:lwjgl-openal:$lwjglVersion:$lwjglNatives"
+            runtimeOnly "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
+            runtimeOnly "org.lwjgl:lwjgl-stb:$lwjglVersion:$lwjglNatives"
+        }
+
+        processResources {
+            inputs.property "lwjglVersion", subProject.ext.lwjglVersion
+
+            filesMatching('META-INF/dependencies.cfg') {
+                expand 'lwjglNatives': "\$lwjglNatives", 'lwjglVersion': subProject.ext.lwjglVersion
+            }
+        }
+
         tasks.withType(Jar) {
             destinationDir = file("$rootDir/run/")
         }

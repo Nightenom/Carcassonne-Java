@@ -3,6 +3,9 @@ package cz.rict.carcassonne.classic.base.launcher;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.List;
+import cz.rict.carcassonne.classic.base.launcher.dependency.DependencyUpdater;
+import cz.rict.carcassonne.classic.base.util.Utils;
 
 /**
  * Hack to run app, gradle not ready for module, setting module path for jar running is not user-friendly
@@ -26,11 +29,18 @@ public class Launcher
      */
     public static void main(final String[] args) throws URISyntaxException, IOException
     {
-        new ProcessBuilder(
-            System.getProperty("java.home") + "/bin/java",
-            "--module-path",
-            Paths.get(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath().normalize().toString(),
-            "--module",
-            MODULE_MAIN_CLASS).inheritIO().start();
+        // TODO: log enviroment: os type, java exec and version
+        if (!Utils.getOSType().isSupported())
+        {
+            // TODO: proper error message
+            System.exit(1);
+        }
+
+        final List<String> modulePath = DependencyUpdater.checkDependencies();
+        modulePath.add(Paths.get(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath().normalize().toString());
+
+        new ProcessBuilder(System.getProperty("java.home") + "/bin/java", "--module-path", String.join(";", modulePath), "--module", MODULE_MAIN_CLASS)
+            .inheritIO()
+            .start();
     }
 }
