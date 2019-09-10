@@ -61,8 +61,6 @@ subprojects { subProject ->
         }
 
         processResources {
-            inputs.property "lwjglVersion", subProject.ext.lwjglVersion
-
             filesMatching('META-INF/dependencies.cfg') {
                 expand 'lwjglNatives': "\$lwjglNatives", 'lwjglVersion': subProject.ext.lwjglVersion
             }
