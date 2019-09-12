@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 public class TestEvent
 {
-    private static final List<Consumer<TestEvent>> listeners = new ArrayList<>();
+    private static List<Consumer<TestEvent>> listeners = new ArrayList<>();
     private final String randomDataToPass;
 
     private TestEvent(final String randomDataToPass)
@@ -27,6 +27,16 @@ public class TestEvent
     public static void post(final String randomDataToPass)
     {
         final TestEvent event = new TestEvent(randomDataToPass);
-        listeners.forEach(l -> l.accept(event));
+        try
+        {
+            listeners.forEach(l -> l.accept(event));
+        }
+        catch (final Exception e)
+        {
+            System.out.println("Shutdowning event cause of mod exception.");
+            e.printStackTrace();
+            // Can unsubscribe the specific erroring listener instead of shutdowning entire event bus
+            listeners = null;
+        }
     }
 }

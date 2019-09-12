@@ -90,14 +90,12 @@
 
         <!-- Checks for Javadoc comments.                     -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
-        <module name="JavadocMethod"/>
+        <module name="JavadocMethod">
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+            <property name="tokens" value="METHOD_DEF, ANNOTATION_FIELD_DEF"/>
+        </module>
         <module name="JavadocType"/>
         <module name="JavadocStyle">
-            <property name="severity" value="info"/>
-            <property name="scope" value="private"/>
-            <property name="excludeScope" value="nothing"/>
-            <property name="tokens" value="METHOD_DEF"/>
-            <property name="checkEmptyJavadoc" value="false"/>
             <property name="checkHtml" value="true"/>
             <property name="checkFirstSentence" value="false"/>
         </module>
@@ -139,9 +137,6 @@
         <!-- Checks for whitespace                               -->
         <!-- See http://checkstyle.sf.net/config_whitespace.html -->
         <module name="EmptyForIteratorPad"/>
-        <module name="GenericWhitespace">
-            <property name="severity" value="info"/>
-        </module>
         <module name="MethodParamPad"/>
         <module name="NoWhitespaceAfter"/>
         <module name="NoWhitespaceBefore"/>
@@ -165,9 +160,12 @@
         <!-- Checks for blocks. You know, those {}'s         -->
         <!-- See http://checkstyle.sf.net/config_blocks.html -->
         <module name="AvoidNestedBlocks"/>
-        <module name="EmptyBlock"/>
+        <module name="EmptyBlock">
+            <property name="option" value="text"/>
+        </module>
         <module name="LeftCurly">
             <property name="option" value="nl"/>
+            <property name="tokens" value="ANNOTATION_DEF, CLASS_DEF, CTOR_DEF, ENUM_CONSTANT_DEF, ENUM_DEF, INTERFACE_DEF, LITERAL_CASE, LITERAL_CATCH, LITERAL_DEFAULT, LITERAL_DO, LITERAL_ELSE, LITERAL_FINALLY, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_SYNCHRONIZED, LITERAL_TRY, LITERAL_WHILE, METHOD_DEF, OBJBLOCK, STATIC_INIT"/>
         </module>
         <module name="NeedBraces"/>
         <module name="RightCurly">
@@ -205,26 +203,6 @@
         <module name="FinalParameters">
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, LITERAL_CATCH, FOR_EACH_CLAUSE"/>
         </module>
-        <module name="TodoComment"/>
         <module name="UpperEll"/>
-
-        <!-- Additional SonarQube related rules            -->
-        <module name="SuppressWarningsHolder"/>
-        <module name="AnnotationLocation">
-            <property name="severity" value="warning"/>
-            <property name="allowSamelineSingleParameterlessAnnotation" value="true"/>
-            <property name="allowSamelineParameterizedAnnotation" value="false"/>
-            <property name="allowSamelineMultipleAnnotations" value="false"/>
-        </module>
-        <module name="AtclauseOrder">
-            <property name="severity" value="warning"/>
-            <property name="tagOrder" value="@author,@version,@param,@return,@throws,@exception,@see,@since,@serial,@serialField,@serialData,@deprecated"/>
-        </module>
-        <module name="OuterTypeFilename">
-            <property name="severity" value="warning"/>
-        </module>
-        <module name="OuterTypeNumber">
-            <property name="severity" value="info"/>
-        </module>
     </module>
 </module>

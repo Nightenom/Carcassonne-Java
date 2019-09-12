@@ -4,9 +4,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 
-public class Utils
+/**
+ * Various util methods
+ */
+public final class Utils
 {
     public static final OS OS_TYPE;
+
+    /**
+     * Private constructor to hide the implicit public one
+     */
+    private Utils()
+    {
+    }
 
     static
     {
@@ -33,7 +43,10 @@ public class Utils
         }
     }
 
-    public static enum OS
+    /**
+     * Enum for holding OS specific variables or capabilities
+     */
+    public enum OS
     {
         LINUX("natives-linux"),
         SOLARIS(""),
@@ -43,27 +56,39 @@ public class Utils
 
         private String lwjglNatives;
 
-        OS(String lwjglNatives)
+        OS(final String lwjglNatives)
         {
             this.lwjglNatives = lwjglNatives;
         }
 
+        /**
+         * @return maven classifier for lwjgl natives
+         */
         public String getLwjglNatives()
         {
             return lwjglNatives;
         }
 
+        /**
+         * @return true if OS is supported
+         */
         public boolean isSupported()
         {
             return this == WINDOWS || this == LINUX || this == OSX;
         }
     }
 
+    /**
+     * @return which OS we are running on
+     */
     public static OS getOSType()
     {
         return OS_TYPE;
     }
 
+    /**
+     * @return enviroment value "user.dir" used as pointer data directory
+     */
     public static Path getRunDirPath()
     {
         return Paths.get(System.getProperty("user.dir"));

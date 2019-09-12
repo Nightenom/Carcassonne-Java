@@ -8,9 +8,9 @@ import cz.rict.carcassonne.classic.base.launcher.dependency.DependencyUpdater;
 import cz.rict.carcassonne.classic.base.util.Utils;
 
 /**
- * Hack to run app, gradle not ready for module, setting module path for jar running is not user-friendly
+ * Pre-main enviroment checking and updating
  */
-public class Launcher
+public final class Launcher
 {
     private static final String MODULE_MAIN_CLASS = "cz.rict.carcassonne.classic.base/cz.rict.carcassonne.classic.base.launcher.Main";
 
@@ -36,7 +36,7 @@ public class Launcher
             System.exit(1);
         }
 
-        final List<String> modulePath = DependencyUpdater.checkDependencies();
+        final List<String> modulePath = DependencyUpdater.checkDependencies(DependencyUpdater.DEP_FILE_PATH);
         modulePath.add(Paths.get(Launcher.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath().normalize().toString());
 
         new ProcessBuilder(System.getProperty("java.home") + "/bin/java", "--module-path", String.join(";", modulePath), "--module", MODULE_MAIN_CLASS)

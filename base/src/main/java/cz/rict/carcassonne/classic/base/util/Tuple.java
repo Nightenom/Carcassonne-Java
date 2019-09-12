@@ -1,5 +1,11 @@
 package cz.rict.carcassonne.classic.base.util;
 
+/**
+ * Class for making bound value pairs
+ *
+ * @param <A> first value type
+ * @param <B> second value type
+ */
 public class Tuple<A, B>
 {
     private A a;
@@ -11,14 +17,14 @@ public class Tuple<A, B>
         this.b = b;
     }
 
-    public void setFirst(final A a)
+    public void setFirst(final A aIn)
     {
-        this.a = a;
+        this.a = aIn;
     }
 
-    public void setSecond(final B b)
+    public void setSecond(final B bIn)
     {
-        this.b = b;
+        this.b = bIn;
     }
 
     public A getFirst()

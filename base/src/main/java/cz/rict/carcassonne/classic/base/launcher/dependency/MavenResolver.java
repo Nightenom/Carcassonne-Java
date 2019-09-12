@@ -11,6 +11,9 @@ public class MavenResolver
     private static final char ARTIFACT_DELIMETER = '-';
     private static final String JAR_CLASSIFIER = ".jar";
 
+    /**
+     * Private constructor to hide the implicit public one
+     */
     private MavenResolver()
     {
     }
@@ -45,7 +48,7 @@ public class MavenResolver
         final String filePathString = filePath.toAbsolutePath().toString();
         final String urlString = url.toString();
 
-        if (!IOUtils.checkSHAFromURL(filePath, url.append(".sha1").toString()))
+        if (!IOUtils.checkSHAfromURL(filePath, url.append(".sha1").toString()))
         {
             System.out.println("Downloading " + urlString + " to " + filePathString);
             IOUtils.downloadURL(urlString, filePath);

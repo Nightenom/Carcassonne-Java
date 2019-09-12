@@ -1,54 +1,45 @@
 package cz.rict.carcassonne.classic.base.launcher.dependency;
 
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 import cz.rict.carcassonne.classic.base.util.Utils;
 
 public class DependencyUpdater
 {
-    private static final String DEP_FILE_PATH = "/META-INF/dependencies.cfg";
+    public static final String DEP_FILE_PATH = "/META-INF/dependencies.cfg";
 
+    /**
+     * Private constructor to hide the implicit public one
+     */
     private DependencyUpdater()
     {
         // TODO: check if dependency locally found is used (otherwise remove it)
+        // TODO: mod library dependencies
     }
 
-    public static List<String> checkDependencies()
+    public static List<String> checkDependencies(final String dependencyFilePath)
     {
         final Path libDirectory = Utils.getRunDirPath().resolve("libraries");
         final List<String> result = new ArrayList<>();
 
-        final InputStream is = DependencyUpdater.class.getResourceAsStream(DEP_FILE_PATH);
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final byte[] buffer = new byte[1_024];
+        final InputStream is = DependencyUpdater.class.getResourceAsStream(dependencyFilePath);
         final String deps;
-        int length;
 
         try
         {
-            Files.createDirectories(libDirectory);
-
-            length = is.read(buffer);
-            while (length != -1)
-            {
-                baos.write(buffer, 0, length);
-                length = is.read(buffer);
-            }
-
-            deps = baos.toString(StandardCharsets.UTF_8.name());
-
+            deps = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
             is.close();
         }
-        catch (final IOException e)
+        catch (final IOException | UncheckedIOException e)
         {
-            // TODO: shutdown app and report error properly
             return result;
         }
 

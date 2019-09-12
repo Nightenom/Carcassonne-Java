@@ -11,16 +11,33 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import cz.rict.carcassonne.classic.base.event.TestEvent;
+import cz.rict.carcassonne.classic.base.launcher.dependency.DependencyUpdater;
 import cz.rict.carcassonne.classic.base.mod.Mod;
 
-public class Main
+/**
+ * Main class when using module path
+ */
+public final class Main
 {
     // -Dcustom_key="custom_value"
     private static final String MOD_DIR_PROP = "game.mod.directory";
     private static final String BASE_MODULE_NAME = Main.class.getModule().getName();
 
+    /**
+     * Private constructor to hide the implicit public one
+     */
+    private Main()
+    {
+    }
+
+    /**
+     * CAN'T TOUCH THIS
+     *
+     * @param args WIERD THINGS WHICH SHOULD NOT BE USED
+     */
     public static void main(final String[] args)
     {
         System.out.println("Mod discovery...");
@@ -45,6 +62,12 @@ public class Main
         TestEvent.post(": Test event");
     }
 
+    /**
+     * Tries to load module as mod, continues with mod loading pipeline if succeeded
+     *
+     * @param mod    mod module
+     * @param modRef mod module reference
+     */
     private static void loadMod(final Module mod, final ModuleReference modRef)
     {
         // To logger
@@ -67,6 +90,7 @@ public class Main
 
         // discover entire module, find exposed classes
         final List<String> modClassCandidates = new ArrayList<>();
+        final AtomicReference<String> dependenciesCfgPath = new AtomicReference<String>();
         try
         {
             modRef.open().list().forEach(path -> {
@@ -74,10 +98,15 @@ public class Main
                 {
                     modClassCandidates.add(path.substring(0, path.length() - 6).replace('/', '.')); // 6 for removing ".class"
                 }
+                if (path.equals(DependencyUpdater.DEP_FILE_PATH))
+                {
+                    dependenciesCfgPath.set(path);
+                }
             });
         }
         catch (final IOException e)
         {
+            dependenciesCfgPath.set("");
             System.out.println("Failed discovering mod file:");
             e.printStackTrace();
         }
@@ -101,6 +130,9 @@ public class Main
                 System.out.println("Found mod: " + modId.value());
                 // Hook event register here or f it and let mods register events in constructor
                 // might need static list to prevent GC of mod instances, but not needed
+                // need to somehow allow mod to download their additional library dependencies:
+                // - downloading from discovered /META-INF/dependencies.cfg is easy
+                // - updating module-path might be not
                 try
                 {
                     modClazz.getConstructor().newInstance();
