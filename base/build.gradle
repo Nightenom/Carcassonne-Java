@@ -19,5 +19,5 @@ jar {
             'Main-Class': jarMainClass
         )
     }
-    baseName rootProject.name
+    baseName 'Carcassonne'
 }

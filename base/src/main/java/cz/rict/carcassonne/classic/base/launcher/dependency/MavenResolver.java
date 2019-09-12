@@ -44,8 +44,12 @@ public class MavenResolver
         final Path filePath = directory.resolve(fileName.toString());
         final String filePathString = filePath.toAbsolutePath().toString();
         final String urlString = url.toString();
-        System.out.println("Downloading " + urlString + " to " + filePathString);
-        IOUtils.downloadURL(urlString, filePath);
+
+        if (!IOUtils.checkSHAFromURL(filePath, url.append(".sha1").toString()))
+        {
+            System.out.println("Downloading " + urlString + " to " + filePathString);
+            IOUtils.downloadURL(urlString, filePath);
+        }
 
         return filePathString;
     }

@@ -17,6 +17,7 @@ public class DependencyUpdater
 
     private DependencyUpdater()
     {
+        // TODO: check if dependency locally found is used (otherwise remove it)
     }
 
     public static List<String> checkDependencies()
@@ -148,6 +149,7 @@ public class DependencyUpdater
                     return d;
                 }
             }
+            System.out.println("Unknown repository: " + dep.getRepository());
             return UNKNOWN;
         }
     }
