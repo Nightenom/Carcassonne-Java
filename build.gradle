@@ -30,6 +30,27 @@ subprojects { subProject ->
     dependencies {
         testImplementation 'junit:junit:4.12'
     }
+    
+    eclipse {
+        classpath {
+            containers 'org.eclipse.buildship.core.gradleclasspathcontainer'
+            file {
+                whenMerged {
+                    entries.findAll {
+                        (it.properties.kind.equals('lib') && !it.properties.path.contains("junit")) ||
+                        it.properties.path.startsWith('org.eclipse.jdt.launching.JRE_CONTAINER') ||
+                        (it.properties.kind.equals('src') && it.properties.path.equals("/base"))
+                    }.each {
+                        it.entryAttributes['module'] = 'true'
+                    }
+                    /* entries.findAll{true}.each{
+                        println it.properties.kind
+                        println it.properties.path
+                    } */
+                }
+            }
+        }
+    }
 
     if (subProject.name != 'base') {
         dependencies {
