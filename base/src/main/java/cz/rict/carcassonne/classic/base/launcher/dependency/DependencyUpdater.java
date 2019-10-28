@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.zip.ZipFile;
 import cz.rict.carcassonne.classic.base.util.Utils;
 
 public class DependencyUpdater
 {
     public static final String DEP_FILE_PATH = "/META-INF/dependencies.cfg";
+    public static final Path LIB_DIRECTORY = Utils.getRunDirPath().resolve("libraries");
 
     /**
      * Private constructor to hide the implicit public one
@@ -25,30 +27,51 @@ public class DependencyUpdater
         // TODO: mod library dependencies
     }
 
-    public static List<String> checkDependencies(final String dependencyFilePath)
+    // use supplied file
+    public static List<String> checkDependencies(final Path jarFile, final String dependencyFilePath)
     {
-        final Path libDirectory = Utils.getRunDirPath().resolve("libraries");
-        final List<String> result = new ArrayList<>();
-
-        final InputStream is = DependencyUpdater.class.getResourceAsStream(dependencyFilePath);
         final String deps;
 
-        try
+        try (ZipFile zipFile = new ZipFile(jarFile.toAbsolutePath().toString());
+            InputStream is = zipFile.getInputStream(zipFile.getEntry(dependencyFilePath)))
         {
             deps = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
-            is.close();
         }
         catch (final IOException | UncheckedIOException e)
         {
-            return result;
+            return new ArrayList<>();
         }
 
-        for (String dep : deps.split("\\r?\\n"))
+        return checkDependencies0(deps);
+    }
+
+    // use current classloader
+    public static List<String> checkDependencies(final String dependencyFilePath)
+    {
+        final String deps;
+
+        try (InputStream is = DependencyUpdater.class.getResourceAsStream(dependencyFilePath))
+        {
+            deps = new BufferedReader(new InputStreamReader(is)).lines().collect(Collectors.joining("\n"));
+        }
+        catch (final IOException | UncheckedIOException e)
+        {
+            return new ArrayList<>();
+        }
+
+        return checkDependencies0(deps);
+    }
+
+    private static List<String> checkDependencies0(final String dependencies)
+    {
+        final List<String> result = new ArrayList<>();
+
+        for (String dep : dependencies.split("\\r?\\n"))
         {
             dep = dep.trim();
             if (!dep.isEmpty())
             {
-                final String path = resolveDependency(dep, libDirectory);
+                final String path = resolveDependency(dep);
                 if (!path.isEmpty())
                 {
                     result.add(path);
@@ -59,12 +82,12 @@ public class DependencyUpdater
         return result;
     }
 
-    private static String resolveDependency(final String depString, final Path directory)
+    private static String resolveDependency(final String depString)
     {
         final String modified = depString.replace("$lwjglNatives", Utils.getOSType().getLwjglNatives());
         final Dependency dep = new Dependency(modified);
 
-        return DependencyResolvers.findResolver(dep).resolve(dep, directory);
+        return DependencyResolvers.findResolver(dep).resolve(dep, LIB_DIRECTORY);
     }
 
     protected static class Dependency

@@ -30,8 +30,7 @@ public final class Main
      * Private constructor to hide the implicit public one
      */
     private Main()
-    {
-    }
+    {}
 
     /**
      * CAN'T TOUCH THIS
@@ -76,7 +75,7 @@ public final class Main
         // discover module-info.java, find exposed packages
         final List<String> accessiblePackages = new ArrayList<>();
         modRef.descriptor().exports().forEach(ex -> {
-            if (!ex.targets().isEmpty() && !ex.targets().contains(BASE_MODULE_NAME))
+            if (ex.targets().isEmpty() || !ex.targets().contains(BASE_MODULE_NAME))
             {
                 return; // unaccessible package
             }
@@ -96,7 +95,7 @@ public final class Main
             modRef.open().list().forEach(path -> {
                 if (path.endsWith(".class") && !path.equals("module-info.class") && accessiblePackages.contains(path.substring(0, path.lastIndexOf('/'))))
                 {
-                    modClassCandidates.add(path.substring(0, path.length() - 6).replace('/', '.')); // 6 for removing ".class"
+                    modClassCandidates.add(path.substring(0, path.length() - ".class".length()).replace('/', '.'));
                 }
                 if (path.equals(DependencyUpdater.DEP_FILE_PATH))
                 {
@@ -130,9 +129,6 @@ public final class Main
                 System.out.println("Found mod: " + modId.value());
                 // Hook event register here or f it and let mods register events in constructor
                 // might need static list to prevent GC of mod instances, but not needed
-                // need to somehow allow mod to download their additional library dependencies:
-                // - downloading from discovered /META-INF/dependencies.cfg is easy
-                // - updating module-path might be not
                 try
                 {
                     modClazz.getConstructor().newInstance();
