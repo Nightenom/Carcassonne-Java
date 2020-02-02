@@ -1,6 +1,13 @@
 # Carcassonne Java Game
 Carcassonne game made in Java language to be useable anywhere.
 
+### HW and SW requirements
+Game is hopefully optimized to run on home toasters.
+HW:
+- unknown
+SW:
+- OpenGL 3+
+
 ### Licence
 Eventhough this project is licenced under GPL-3.0 (so everything is public) we are not owners of entire content:
 - play cards and meeps (and other figures) were created originally by game creators
