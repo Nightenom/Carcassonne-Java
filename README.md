@@ -17,7 +17,7 @@ Eventhough this project is licenced under GPL-3.0 (so everything is public) we a
 
 ### Contributing
 Feel free to make a new PR/issue to start a discusion about any problem regarding this game. Please, consider using english language. Always try to provide as much details as possible to minilize time needed for clarifing the issue for anyone else  
-Any PR has to be documented well and properly formatted using repository format system `add link to cmd`, also short description or issue link should be provided  
+Any PR has to be documented well and properly formatted using checkstyle (<https://github.com/Nightenom/Carcassonne-Java/blob/master/docs/ide/checkstyle.xml>) or similar, also short description or issue link should be provided  
 
 #### Setuping local dev space
 - `git clone` the repository
