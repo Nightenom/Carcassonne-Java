@@ -3,10 +3,12 @@ Carcassonne game made in Java language to be useable anywhere.
 
 ### HW and SW requirements
 Game is hopefully optimized to run on home toasters.
-HW:
-- unknown
-SW:
-- OpenGL 3+
+
+#### HW:
+- unknown  
+#### SW:
+- Java 11+
+- OpenGL 3+  
 
 ### Licence
 Eventhough this project is licenced under GPL-3.0 (so everything is public) we are not owners of entire content:
@@ -14,8 +16,8 @@ Eventhough this project is licenced under GPL-3.0 (so everything is public) we a
 - LWJGL version 3
 
 ### Contributing
-Feel free to make a new PR/issue to start a discusion about any problem regarding this game. Please, consider using english language. Always try to provide as much details as possible to minilize time needed for clarifing the issue for anyone else
-Any PR has to be documented well and properly formatted using repository format system `add link to cmd`, also short description or issue link should be provided
+Feel free to make a new PR/issue to start a discusion about any problem regarding this game. Please, consider using english language. Always try to provide as much details as possible to minilize time needed for clarifing the issue for anyone else  
+Any PR has to be documented well and properly formatted using repository format system `add link to cmd`, also short description or issue link should be provided  
 
 #### Setuping local dev space
 - `git clone` the repository
