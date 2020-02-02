@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import cz.rict.carcassonne.classic.base.event.TestEvent;
+import cz.rict.carcassonne.classic.base.client.Carcassonne;
 import cz.rict.carcassonne.classic.base.launcher.dependency.DependencyUpdater;
 import cz.rict.carcassonne.classic.base.mod.Mod;
 
@@ -30,7 +30,8 @@ public final class Main
      * Private constructor to hide the implicit public one
      */
     private Main()
-    {}
+    {
+    }
 
     /**
      * CAN'T TOUCH THIS
@@ -58,7 +59,7 @@ public final class Main
             System.out.println("No mods found at: " + modsDir.toAbsolutePath().toString());
         }
 
-        TestEvent.post(": Test event");
+        Carcassonne.instance.run();
     }
 
     /**
@@ -128,7 +129,7 @@ public final class Main
             {
                 System.out.println("Found mod: " + modId.value());
                 // Hook event register here or f it and let mods register events in constructor
-                // might need static list to prevent GC of mod instances, but not needed
+                // might need static list to prevent GC of mod instances, but mods might do that themselves
                 try
                 {
                     modClazz.getConstructor().newInstance();

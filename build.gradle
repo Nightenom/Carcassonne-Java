@@ -1,13 +1,5 @@
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        // https://github.com/java9-modularity/gradle-modules-plugin
-        classpath "org.javamodularity:moduleplugin:1.6.0"
-    }
+plugins {
+    id 'org.javamodularity.moduleplugin' version '1.6.0' apply false
 }
 
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -58,7 +50,7 @@ subprojects { subProject ->
         }
 
         tasks.withType(Jar) {
-            destinationDir = file("$rootDir/run/mods/")
+            destinationDirectory = file("$rootDir/run/mods/")
         }
     }
     else

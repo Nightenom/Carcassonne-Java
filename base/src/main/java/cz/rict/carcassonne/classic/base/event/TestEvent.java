@@ -1,12 +1,10 @@
 package cz.rict.carcassonne.classic.base.event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
+import cz.rict.carcassonne.classic.base.mod.event.Event;
+import cz.rict.carcassonne.classic.base.mod.event.EventBus;
 
-public class TestEvent
+public class TestEvent extends Event
 {
-    private static List<Consumer<TestEvent>> listeners = new ArrayList<>();
     private final String randomDataToPass;
 
     private TestEvent(final String randomDataToPass)
@@ -19,24 +17,8 @@ public class TestEvent
         return randomDataToPass;
     }
 
-    public static void registerListener(final Consumer<TestEvent> listener)
-    {
-        listeners.add(listener);
-    }
-
     public static void post(final String randomDataToPass)
     {
-        final TestEvent event = new TestEvent(randomDataToPass);
-        try
-        {
-            listeners.forEach(l -> l.accept(event));
-        }
-        catch (final Exception e)
-        {
-            System.out.println("Shutdowning event cause of mod exception.");
-            e.printStackTrace();
-            // Can unsubscribe the specific erroring listener instead of shutdowning entire event bus
-            listeners = null;
-        }
+        EventBus.post(new TestEvent(randomDataToPass));
     }
 }
