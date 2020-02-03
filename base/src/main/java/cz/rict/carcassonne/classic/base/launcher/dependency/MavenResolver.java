@@ -1,6 +1,7 @@
 package cz.rict.carcassonne.classic.base.launcher.dependency;
 
 import java.nio.file.Path;
+import cz.rict.carcassonne.classic.base.launcher.Launcher;
 import cz.rict.carcassonne.classic.base.launcher.dependency.DependencyUpdater.Dependency;
 import cz.rict.carcassonne.classic.base.util.IOUtils;
 
@@ -50,8 +51,13 @@ public class MavenResolver
 
         if (!IOUtils.checkSHAfromURL(filePath, url.append(".sha1").toString()))
         {
-            System.out.println("Downloading " + urlString + " to " + filePathString);
+            Launcher.LOGGER.info("Downloading {} to {}", urlString, filePathString);
             IOUtils.downloadURL(urlString, filePath);
+        }
+        if (!IOUtils.checkSHAfromURL(filePath, url.append(".sha1").toString()))
+        {
+            Launcher.LOGGER.fatal("Downloading {} to {} failed! Different SHA1.", urlString, filePathString);
+            System.exit(1);
         }
 
         return filePathString;

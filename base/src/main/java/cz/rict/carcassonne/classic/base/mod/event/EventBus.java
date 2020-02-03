@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import cz.rict.carcassonne.classic.base.client.Carcassonne;
 
 /**
  * Class for subscribing and dispatching all game events.
@@ -32,17 +33,28 @@ public final class EventBus
     }
 
     /**
+     * @param eventClass Event subscriber class instance
+     */
+    public static void register(final Object eventClass)
+    {
+        for (final Method method : eventClass.getClass().getMethods())
+        {
+            registerMethod(method, eventClass);
+        }
+    }
+
+    /**
      * @param eventClass Event subscriber class
      */
     public static void register(final Class<?> eventClass)
     {
         for (final Method method : eventClass.getMethods())
         {
-            registerMethod(method);
+            registerMethod(method, null);
         }
     }
 
-    private static void registerMethod(final Method method)
+    private static void registerMethod(final Method method, final Object instance)
     {
         if (!method.isAnnotationPresent(SubscribeEvent.class))
         {
@@ -53,8 +65,7 @@ public final class EventBus
 
         if (params.length != 1 || !Event.class.isAssignableFrom(params[0]))
         {
-            // TODO: logger warn
-            System.err.println("Event subscribe method \"" + method + "\" has more than one argument or first argument is not Event type!");
+            Carcassonne.getLogger().warn("Event subscribe method \"{}\" has more than one argument or first argument is not Event type!", method);
         }
 
         final Class<? extends Event> eventClass = params[0].asSubclass(Event.class);
@@ -68,17 +79,15 @@ public final class EventBus
         eventListenerz.add((Event event) -> {
             try
             {
-                method.invoke(null, event);
+                method.invoke(instance, event);
             }
             catch (final IllegalArgumentException | NullPointerException e)
             {
-                // TODO: logger error
-                System.err.println("Like wtf is happening, event listener is not static or has changed arguments during runtime...");
+                Carcassonne.getLogger().error("Like wtf is happening, event listener has probably changed arguments during runtime...", e);
             }
             catch (final IllegalAccessException | InvocationTargetException e)
             {
-                // TODO: logger error, print stacktrace
-                System.err.println("Error during executing event listener!");
+                Carcassonne.getLogger().error("Error during invoking event listener!", e);
             }
         });
     }

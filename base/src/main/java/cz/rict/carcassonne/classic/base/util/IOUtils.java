@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import cz.rict.carcassonne.classic.base.client.Carcassonne;
 
 /**
  * Various IO util methods, please use NIO as much as possible
@@ -30,9 +31,9 @@ public final class IOUtils
     /**
      * Downloads and saves to file given url
      *
-     * @param url      valid url
-     * @param filePath valid filepath, i.e. not a directory
-     * @return true if succeeded, false otherwise
+     * @param  url      valid url
+     * @param  filePath valid filepath, i.e. not a directory
+     * @return          true if succeeded, false otherwise
      */
     public static boolean downloadURL(final String url, final Path filePath)
     {
@@ -50,9 +51,9 @@ public final class IOUtils
     /**
      * Downloads and saves to file given url
      *
-     * @param url      valid url
-     * @param filePath valid filepath, i.e. not a directory
-     * @return true if succeeded, false otherwise
+     * @param  url      valid url
+     * @param  filePath valid filepath, i.e. not a directory
+     * @return          true if succeeded, false otherwise
      */
     public static boolean downloadURL(final URL url, final Path filePath)
     {
@@ -75,8 +76,8 @@ public final class IOUtils
     /**
      * Downloads given url and returs its content as string
      *
-     * @param url valid url
-     * @return content if succeeded, empty string otherwise
+     * @param  url valid url
+     * @return     content if succeeded, empty string otherwise
      */
     public static String readURL(final URL url)
     {
@@ -91,7 +92,7 @@ public final class IOUtils
         }
         catch (final IOException e)
         {
-            e.printStackTrace();
+            Carcassonne.getLogger().error("", e);
             return "";
         }
     }
@@ -99,9 +100,9 @@ public final class IOUtils
     /**
      * Checks if file sha matches sha downloaded from given url
      *
-     * @param path              valid filepath, i.e. not a directory
-     * @param urlWithShaToCheck valid url which only contains sha as readable string
-     * @return true if sha matches, false otherwise
+     * @param  path              valid filepath, i.e. not a directory
+     * @param  urlWithShaToCheck valid url which only contains sha as readable string
+     * @return                   true if sha matches, false otherwise
      */
     public static boolean checkSHAfromURL(final Path path, final String urlWithShaToCheck)
     {
@@ -111,7 +112,7 @@ public final class IOUtils
         }
         catch (final MalformedURLException e)
         {
-            e.printStackTrace();
+            Carcassonne.getLogger().error("", e);
             return false;
         }
     }
@@ -119,16 +120,16 @@ public final class IOUtils
     /**
      * Checks if file sha matches sha downloaded from given url
      *
-     * @param path              valid filepath, i.e. not a directory
-     * @param urlWithShaToCheck valid url which only contains sha as readable string
-     * @return true if sha matches, false otherwise
+     * @param  path              valid filepath, i.e. not a directory
+     * @param  urlWithShaToCheck valid url which only contains sha as readable string
+     * @return                   true if sha matches or attemp to read URL failed, false otherwise
      */
     public static boolean checkSHAfromURL(final Path path, final URL urlWithShaToCheck)
     {
         final String shaFromUrl = readURL(urlWithShaToCheck);
         if (shaFromUrl.isEmpty())
         {
-            System.out.println("Could not check blabla , filepath nebo url a nejaky pekny error, jsem lina osoba");
+            Carcassonne.getLogger().error("Error during read SHA from {}", urlWithShaToCheck);
             return true;
         }
         return checkSHA(path, shaFromUrl);
@@ -137,9 +138,9 @@ public final class IOUtils
     /**
      * Checks if file sha matches given sha
      *
-     * @param path       valid filepath, i.e. not a directory
-     * @param shaToCheck sha as readable string
-     * @return true if sha matches, false otherwise
+     * @param  path       valid filepath, i.e. not a directory
+     * @param  shaToCheck sha as readable string
+     * @return            true if sha matches, false otherwise
      */
     public static boolean checkSHA(final Path path, final String shaToCheck)
     {
@@ -149,8 +150,8 @@ public final class IOUtils
     /**
      * Calculates file sha, does check for file existence
      *
-     * @param path valid filepath, i.e. not a directory
-     * @return sha as readable string if succeeded, empty string otherwise
+     * @param  path valid filepath, i.e. not a directory
+     * @return      sha as readable string if succeeded, empty string otherwise
      */
     public static String calculateSHA(final Path path)
     {
@@ -160,8 +161,7 @@ public final class IOUtils
         }
 
         final byte[] sha;
-        try (
-            DigestInputStream dis = new DigestInputStream(new FileInputStream(path.toFile()), MessageDigest.getInstance("SHA-1")))
+        try (DigestInputStream dis = new DigestInputStream(new FileInputStream(path.toFile()), MessageDigest.getInstance("SHA-1")))
         {
             final byte[] buffer = new byte[1024];
             while (dis.read(buffer, 0, buffer.length) != -1)
@@ -172,8 +172,7 @@ public final class IOUtils
         }
         catch (final IOException | NoSuchAlgorithmException e)
         {
-            System.out.println("Unable to calculate sha for: " + path.toAbsolutePath().toString());
-            e.printStackTrace();
+            Carcassonne.getLogger().error("Unable to calculate sha for: " + path.toAbsolutePath().toString(), e);
             return "";
         }
 

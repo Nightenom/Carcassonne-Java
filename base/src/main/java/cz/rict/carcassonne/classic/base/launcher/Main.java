@@ -40,7 +40,7 @@ public final class Main
      */
     public static void main(final String[] args)
     {
-        System.out.println("Mod discovery...");
+        Launcher.LOGGER.info("Mod discovery...");
 
         final Path modsDir = Path.of(System.getProperties().containsKey(MOD_DIR_PROP) ? System.getProperty(MOD_DIR_PROP) : "mods");
         if (Files.isDirectory(modsDir))
@@ -56,10 +56,11 @@ public final class Main
         }
         else
         {
-            System.out.println("No mods found at: " + modsDir.toAbsolutePath().toString());
+            Launcher.LOGGER.info("No mods found at: {}", modsDir.toAbsolutePath().toString());
         }
 
-        Carcassonne.instance.run();
+        Launcher.LOGGER.info("Starting the game...");
+        Carcassonne.getInstance().run();
     }
 
     /**
@@ -71,7 +72,7 @@ public final class Main
     private static void loadMod(final Module mod, final ModuleReference modRef)
     {
         // To logger
-        System.out.println("Found possible mod at: " + modRef.location().map(uri -> Paths.get(uri.normalize()).toString()).orElse("Unknown location"));
+        Launcher.LOGGER.debug("Found possible mod at: {}", modRef.location().map(uri -> Paths.get(uri.normalize()).toString()).orElse("Unknown location"));
 
         // discover module-info.java, find exposed packages
         final List<String> accessiblePackages = new ArrayList<>();
@@ -85,6 +86,7 @@ public final class Main
 
         if (accessiblePackages.isEmpty())
         {
+            Launcher.LOGGER.debug("Mod has no \"exported to\" packages");
             return;
         }
 
@@ -107,12 +109,12 @@ public final class Main
         catch (final IOException e)
         {
             dependenciesCfgPath.set("");
-            System.out.println("Failed discovering mod file:");
-            e.printStackTrace();
+            Launcher.LOGGER.error("Failed opening mod file", e);
         }
 
         if (modClassCandidates.isEmpty())
         {
+            Launcher.LOGGER.debug("Mod packages don't contain any class");
             return;
         }
 
@@ -127,8 +129,7 @@ public final class Main
             final Mod modId = modClazz.getAnnotation(Mod.class);
             if (modId != null)
             {
-                System.out.println("Found mod: " + modId.value());
-                // Hook event register here or f it and let mods register events in constructor
+                Launcher.LOGGER.info("Found mod: " + modId.value());
                 // might need static list to prevent GC of mod instances, but mods might do that themselves
                 try
                 {
@@ -136,18 +137,15 @@ public final class Main
                 }
                 catch (final NoSuchMethodException | IllegalArgumentException e)
                 {
-                    System.out.println("Missing public non argument constructor");
-                    e.printStackTrace();
+                    Launcher.LOGGER.error("Missing public non argument constructor", e);
                 }
                 catch (final SecurityException | IllegalAccessException e)
                 {
-                    System.out.println("Can't access mod constructor");
-                    e.printStackTrace();
+                    Launcher.LOGGER.error("Can't access mod constructor", e);
                 }
                 catch (final InstantiationException | InvocationTargetException e)
                 {
-                    System.out.println("Can't instantiate mod instance");
-                    e.printStackTrace();
+                    Launcher.LOGGER.error("Can't instantiate mod instance", e);
                 }
             }
         });

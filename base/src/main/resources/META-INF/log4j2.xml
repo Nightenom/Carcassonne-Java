@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="%highlight{[%d{HH:mm:ss.SSS}] [%t/%level] [%logger/%c{2.}]: %msg%n%xEx}"/>
+        </Console>
+        <RollingRandomAccessFile name="Launcher" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] [%t/%level] [%logger/%c{2.}]: %msg%n%xEx"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="logs">
+                    <IfFileName glob="*.log.gz" />
+                    <IfLastModified age="60d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+        <RollingRandomAccessFile name="Game" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="[%d{HH:mm:ss.SSS}] [%t/%level] [%logger/%c{2.}]: %msg%n%xEx"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingRandomAccessFile>
+    </Appenders>
+    <Loggers>
+        <Root level="${sys:settings.logLevel:-info}">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="${sys:settings.logPhase:-Launcher}"/>
+        </Root>
+    </Loggers>
+</Configuration>

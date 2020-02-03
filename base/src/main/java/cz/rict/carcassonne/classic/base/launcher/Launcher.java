@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import cz.rict.carcassonne.classic.base.launcher.dependency.DependencyUpdater;
 import cz.rict.carcassonne.classic.base.util.Utils;
 
@@ -14,6 +17,7 @@ import cz.rict.carcassonne.classic.base.util.Utils;
 public final class Launcher
 {
     private static final String MODULE_MAIN_CLASS = "cz.rict.carcassonne.classic.base/cz.rict.carcassonne.classic.base.launcher.Main";
+    public static final Logger LOGGER = LogManager.getLogger("Launcher");
 
     /**
      * Util class
@@ -30,16 +34,19 @@ public final class Launcher
      */
     public static void main(final String[] args) throws URISyntaxException, IOException
     {
-        // TODO: log enviroment: os type, java exec and version
+        LOGGER.info("Console arguments: {}", Arrays.toString(args));
+        LOGGER.info("OS: {} {} {}", System.getProperty("os.name"), System.getProperty("os.version"), System.getProperty("os.arch"));
+        LOGGER.info("JVM: {} {} {}", System.getProperty("java.vendor"), System.getProperty("java.version"), System.getProperty("java.home"));
+
         if (!Utils.getOSType().isSupported())
         {
-            // TODO: proper error message
+            LOGGER.error("Unsupported OS, your OS have to be capable of running LWJGL. Submit an issue if you think this is wrong.");
             System.exit(1);
         }
 
         final List<String> modulePath = DependencyUpdater.checkDependencies(DependencyUpdater.DEP_FILE_PATH);
         Files.list(Path.of("mods")).forEach(jarFilePath -> {
-            if (jarFilePath.toString().contains(".jar")) // TODO: ioutils create is path jar file
+            if (jarFilePath.toString().contains(".jar"))
             {
                 modulePath.addAll(DependencyUpdater.checkDependencies(jarFilePath, DependencyUpdater.DEP_FILE_PATH));
             }

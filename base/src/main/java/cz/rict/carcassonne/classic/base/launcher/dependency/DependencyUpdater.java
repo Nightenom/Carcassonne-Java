@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
+import cz.rict.carcassonne.classic.base.launcher.Launcher;
 import cz.rict.carcassonne.classic.base.util.Utils;
 
 public class DependencyUpdater
@@ -163,7 +164,7 @@ public class DependencyUpdater
                     return d;
                 }
             }
-            System.out.println("Unknown repository: " + dep.getRepository());
+            Launcher.LOGGER.warn("Unknown repository: {}", dep.getRepository());
             return UNKNOWN;
         }
     }

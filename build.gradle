@@ -19,7 +19,14 @@ subprojects { subProject ->
         mavenCentral()
     }
     
+    subProject.ext.log4jVersion = "2.13.0"
+    subProject.ext.fastutilVersion = "8.3.0"
+
     dependencies {
+        implementation "org.apache.logging.log4j:log4j-api:$log4jVersion"
+        implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+        implementation "it.unimi.dsi:fastutil:$fastutilVersion"
+
         testImplementation 'junit:junit:4.12'
     }
     
@@ -75,12 +82,12 @@ subprojects { subProject ->
 
         processResources {
             filesMatching('META-INF/dependencies.cfg') {
-                expand 'lwjglNatives': "\$lwjglNatives", 'lwjglVersion': subProject.ext.lwjglVersion
+                expand 'lwjglNatives': "\$lwjglNatives", 'lwjglVersion': subProject.ext.lwjglVersion, 'log4jVersion': subProject.ext.log4jVersion, 'fastutilVersion': subProject.ext.fastutilVersion
             }
         }
 
         tasks.withType(Jar) {
-            destinationDir = file("$rootDir/run/")
+            destinationDirectory = file("$rootDir/run/")
         }
     }
 }
